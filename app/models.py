@@ -1,11 +1,10 @@
 from datetime import datetime
 from app import db
 
-from sqlalchemy import Column, String, Integer
+#from sqlalchemy import Column, String, Integer
 
-class BaseModel(object):
+class BaseModel(db.Model):
     __abstract__ = True
-    __repr_fields__ = ['id']
 
     date_created = db.Column(db.DateTime, default=datetime.now)
     date_modified = db.Column(db.DateTime, default=datetime.now,
@@ -63,10 +62,11 @@ class BaseModel(object):
         return commit and db.session.commit()
 
 
-class Customer(db.Model, BaseModel):
+class Customer(BaseModel, db.Model):
     __tablename__ = 'customer'
     __repr_fields__ = ['id', 'name', 'orgnr']
-    id = Column(Integer(), primary_key=True)
-    name = Column(String())
-    orgnr = Column(String())
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String())
+    orgnr = db.Column(db.String())
+
 
