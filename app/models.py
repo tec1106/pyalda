@@ -61,12 +61,42 @@ class BaseModel(db.Model):
         db.session.delete(self)
         return commit and db.session.commit()
 
-
-class Customer(BaseModel, db.Model):
+class Customer(BaseModel):
     __tablename__ = 'customer'
-    __repr_fields__ = ['id', 'name', 'orgnr']
+    __repr_fields__ = ['id', 'name', 'orgnr', 'trunks']
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String())
     orgnr = db.Column(db.String())
+    trunks = db.relationship('Trunk', secondary=lambda: customer_trunk_association)
+    features = db.relationship('Feature', secondary=lambda: customer_feature_association) #lambda so association table config can be below classes due to read order
 
 
+class Trunk(BaseModel):
+    '''Write 'trunks.update()' to update trunks according to list'''
+    __tablename__= 'trunk'
+    __repr_fields__ = ['id', 'trunk', 'platform']
+    id = db.Column(db.Integer(), primary_key=True)
+    trunk = db.Column(db.String())
+    platform = db.Column(db.String())
+    customers = db.relationship('Customer', secondary=lambda: customer_trunk_association, back_populates='trunks')
+
+
+class Feature(BaseModel):
+    '''Keeps customer features in sync'''
+    __tablename__= 'feature'
+    __repr_fields__ = ['id', 'feature_id', 'feature_name']
+    id = db.Column(db.Integer(), primary_key=True)
+    feature_id = db.Column(db.String())
+    feature_name = db.Column(db.String())
+    customers = db.relationship('Customer', secondary=lambda: customer_trunk_association, back_populates='features')
+
+
+customer_trunk_association = db.Table('customer_trunk_association',
+    db.Column('customer_id', db.Integer, db.ForeignKey('customer.id')),
+    db.Column('trunk_id', db.Integer, db.ForeignKey('trunk.id'))
+    )
+
+customer_feature_association = db.Table('customer_feature_association',
+    db.Column('customer_id', db.Integer, db.ForeignKey('customer.id')),
+    db.Column('feature_id', db.Integer, db.ForeignKey('feature.id'))
+    )
