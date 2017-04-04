@@ -1,3 +1,4 @@
 /env/
 /.git/
+app/app.db
 *__pycache__*
