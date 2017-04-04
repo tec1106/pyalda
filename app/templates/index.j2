@@ -1,0 +1,9 @@
+{% extends "base.j2" %}
+{% block content %}
+    <h1>Velkommen til Knekt</h1>
+    <ul id="navigation">
+    {% for item in nav %}
+        <li><a href="{{ item.href }}">{{ item.caption }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}
